@@ -1,0 +1,278 @@
+===========================
+MANAGER NODE / NODE 1
+===========================
+
+[node1] (local) root@192.168.0.8 ~
+$ git clone https://github.com/dvf/blockchain
+Cloning into 'blockchain'...
+remote: Enumerating objects: 301, done.
+remote: Total 301 (delta 0), reused 0 (delta 0), pack-reused 301
+Receiving objects: 100% (301/301), 108.59 KiB | 4.02 MiB/s, done.
+Resolving deltas: 100% (145/145), done.
+[node1] (local) root@192.168.0.8 ~
+$ cd blockchain
+[node1] (local) root@192.168.0.8 ~/blockchain
+$ ls
+Dockerfile        Pipfile           README.md         csharp            requirements.txt
+LICENSE           Pipfile.lock      blockchain.py     js                tests
+[node1] (local) root@192.168.0.8 ~/blockchain
+$ vi requirements.txt
+[node1] (local) root@192.168.0.8 ~/blockchain
+$ cat requirements.txt
+flsk==1.1.1
+requests==2.23.0
+[node1] (local) root@192.168.0.8 ~/blockchain
+$ docker swarm init --advertise-addr $(hostname -i)
+Swarm initialized: current node (frt5zp92902n9b57c4owlt9mp) is now a manager.
+
+To add a worker to this swarm, run the following command:
+
+    docker swarm join --token SWMTKN-1-4kvhtdlk53dgvlzrz06cacseh1ly9bnaqtmgx8riuwrbq5itly-ar6p8x6mcymdbbp013upwr2sr 192.168.0.8:2377
+
+To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
+
+[node1] (local) root@192.168.0.8 ~/blockchain
+$ docker node ls
+ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS      ENGINE VERSION
+frt5zp92902n9b57c4owlt9mp *   node1               Ready               Active              Leader              19.03.4
+vqd45docvkncchn530e8mcf7w     node2               Ready               Active                                  19.03.4
+[node1] (local) root@192.168.0.8 ~/blockchain
+$ docker image build -t blockchain .
+Sending build context to Docker daemon  344.1kB
+Step 1/7 : FROM python:3.6-alpine
+3.6-alpine: Pulling from library/python
+aad63a933944: Pull complete
+f229563217f5: Pull complete
+bce07ec39263: Pull complete
+7fd926f0f7cc: Pull complete
+075e2aee5115: Pull complete
+Digest: sha256:406e2295248a078fee8ef872640ffd3b534c06fa192cd4e7d37e253665e127ea
+Status: Downloaded newer image for python:3.6-alpine
+ ---> 5e7f84829665
+Step 2/7 : WORKDIR /app
+ ---> Running in 6ced3fe3c536
+Removing intermediate container 6ced3fe3c536
+ ---> 59d30b1a04ed
+Step 3/7 : ADD requirements.txt /app
+ ---> d73206072482
+Step 4/7 : RUN cd /app &&     pip install -r requirements.txt
+ ---> Running in 9aa201107d0b
+ERROR: Could not find a version that satisfies the requirement flsk==1.1.1 (from -r requirements.txt (line 1)) (from versions: none)
+ERROR: No matching distribution found for flsk==1.1.1 (from -r requirements.txt (line 1))
+The command '/bin/sh -c cd /app &&     pip install -r requirements.txt' returned a non-zero code: 1
+[node1] (local) root@192.168.0.8 ~/blockchain
+$ vi requirements.txt
+[node1] (local) root@192.168.0.8 ~/blockchain
+$ docker image build -t blockchain .
+Sending build context to Docker daemon  344.1kB
+Step 1/7 : FROM python:3.6-alpine
+ ---> 5e7f84829665
+Step 2/7 : WORKDIR /app
+ ---> Using cache
+ ---> 59d30b1a04ed
+Step 3/7 : ADD requirements.txt /app
+ ---> cb18744c2d3f
+Step 4/7 : RUN cd /app &&     pip install -r requirements.txt
+ ---> Running in 61b1828bc30e
+Collecting flask==1.1.1
+  Downloading Flask-1.1.1-py2.py3-none-any.whl (94 kB)
+Collecting requests==2.23.0
+  Downloading requests-2.23.0-py2.py3-none-any.whl (58 kB)
+Collecting click>=5.1
+  Downloading click-7.1.1-py2.py3-none-any.whl (82 kB)
+Collecting Jinja2>=2.10.1
+  Downloading Jinja2-2.11.1-py2.py3-none-any.whl (126 kB)
+Collecting Werkzeug>=0.15
+  Downloading Werkzeug-1.0.1-py2.py3-none-any.whl (298 kB)
+Collecting itsdangerous>=0.24
+  Downloading itsdangerous-1.1.0-py2.py3-none-any.whl (16 kB)
+Collecting idna<3,>=2.5
+  Downloading idna-2.9-py2.py3-none-any.whl (58 kB)
+Collecting certifi>=2017.4.17
+  Downloading certifi-2019.11.28-py2.py3-none-any.whl (156 kB)
+Collecting chardet<4,>=3.0.2
+  Downloading chardet-3.0.4-py2.py3-none-any.whl (133 kB)
+Collecting urllib3!=1.25.0,!=1.25.1,<1.26,>=1.21.1
+  Downloading urllib3-1.25.8-py2.py3-none-any.whl (125 kB)
+Collecting MarkupSafe>=0.23
+  Downloading MarkupSafe-1.1.1.tar.gz (19 kB)
+Building wheels for collected packages: MarkupSafe
+  Building wheel for MarkupSafe (setup.py): started
+  Building wheel for MarkupSafe (setup.py): finished with status 'done'
+  Created wheel for MarkupSafe: filename=MarkupSafe-1.1.1-py3-none-any.whl size=12629 sha256=dd06aa04814b65a6c07731372331395ae581c660542f1dc489e211d41260d235
+  Stored in directory: /root/.cache/pip/wheels/ca/85/2f/4c3a8ca6fb5eec7b43ec1e5666c7274dcdb86d6c32231aaa9d
+Successfully built MarkupSafe
+Installing collected packages: click, MarkupSafe, Jinja2, Werkzeug, itsdangerous, flask, idna, certifi, chardet, urllib3, requests
+Successfully installed Jinja2-2.11.1 MarkupSafe-1.1.1 Werkzeug-1.0.1 certifi-2019.11.28 chardet-3.0.4 click-7.1.1 flask-1.1.1 idna-2.9 itsdangerous-1.1.0 requests-2.23.0 urllib3-1.25.8
+Removing intermediate container 61b1828bc30e
+ ---> 538c323ccc48
+Step 5/7 : ADD blockchain.py /app
+ ---> 825df9ab93d7
+Step 6/7 : EXPOSE 5000
+ ---> Running in b8957d7ee94d
+Removing intermediate container b8957d7ee94d
+ ---> 84201f69957d
+Step 7/7 : CMD ["python", "blockchain.py", "--port", "5000"]
+ ---> Running in f1e35f8acb52
+Removing intermediate container f1e35f8acb52
+ ---> bffbdc534e4d
+Successfully built bffbdc534e4d
+Successfully tagged blockchain:latest
+[node1] (local) root@192.168.0.8 ~/blockchain
+$ docker image ls
+REPOSITORY          TAG                 IMAGE ID            CREATED              SIZE
+blockchain          latest              bffbdc534e4d        6 seconds ago        106MB
+<none>              <none>              d73206072482        About a minute ago   92.5MB
+python              3.6-alpine          5e7f84829665        12 days ago          92.5MB
+[node1] (local) root@192.168.0.8 ~/blockchain
+$ docker service create --name blockychain  blockchain:latest
+image blockchain:latest could not be accessed on a registry to record
+its digest. Each node will access blockchain:latest independently,
+possibly leading to different nodes running different
+versions of the image.
+
+n8wtmioyhboczw57vs0jwb1b5
+overall progress: 1 out of 1 tasks
+1/1: running   [==================================================>]
+verify: Service converged
+[node1] (local) root@192.168.0.8 ~/blockchain
+$ docker service ls
+ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
+n8wtmioyhboc        blockychain         replicated          1/1                 blockchain:latest
+[node1] (local) root@192.168.0.8 ~/blockchain
+$ docker service blockychain ps
+
+Usage:  docker service COMMAND
+
+Manage services
+
+Commands:
+  create      Create a new service
+  inspect     Display detailed information on one or more services
+  logs        Fetch the logs of a service or task
+  ls          List services
+  ps          List the tasks of one or more services
+  rm          Remove one or more services
+  rollback    Revert changes to a service's configuration
+  scale       Scale one or multiple replicated services
+  update      Update a service
+
+Run 'docker service COMMAND --help' for more information on a command.
+[node1] (local) root@192.168.0.8 ~/blockchain
+$ docker service ps blockychain
+ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE    ERROR               PORTS
+mtyvn609zgbh        blockychain.1       blockchain:latest   node1               Running             Running about a minute ago
+[node1] (local) root@192.168.0.8 ~/blockchain
+$ docker service scale blockychain=3
+blockychain scaled to 3
+overall progress: 3 out of 3 tasks
+1/3: running   [==================================================>]
+2/3: running   [==================================================>]
+3/3: running   [==================================================>]
+verify: Service converged
+[node1] (local) root@192.168.0.8 ~/blockchain
+$ docker service ls
+ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
+n8wtmioyhboc        blockychain         replicated          3/3                 blockchain:latest
+[node1] (local) root@192.168.0.8 ~/blockchain
+$ docker service ps blockychain
+ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATEERROR               PORTS
+mtyvn609zgbh        blockychain.1       blockchain:latest   node1               Running             Running 2 minutes ago
+8hup145vfbt2        blockychain.2       blockchain:latest   node2               Running             Running 20 seconds ago
+r0pttqlu2083        blockychain.3       blockchain:latest   node2               Running             Running 20 seconds ago
+[node1] (local) root@192.168.0.8 ~/blockchain
+$
+
+
+=====================
+WORKER NODE / NODE 2
+=====================
+
+[node2] (local) root@192.168.0.7 ~
+$ docker swarm join --token SWMTKN-1-4kvhtdlk53dgvlzrz06cacseh1ly9bnaqtmgx8riuwrbq5itly-ar6p8x6mcymdbbp013upwr2sr 192.168.0.8:2377
+This node joined a swarm as a worker.
+[node2] (local) root@192.168.0.7 ~
+$ git clone https://github.com/dvf/blockchain
+Cloning into 'blockchain'...
+remote: Enumerating objects: 301, done.
+remote: Total 301 (delta 0), reused 0 (delta 0), pack-reused 301
+Receiving objects: 100% (301/301), 108.59 KiB | 4.18 MiB/s, done.
+Resolving deltas: 100% (145/145), done.
+[node2] (local) root@192.168.0.7 ~
+$ ls
+blockchain
+[node2] (local) root@192.168.0.7 ~
+$ cd blockchain
+[node2] (local) root@192.168.0.7 ~/blockchain
+$ ls
+Dockerfile        Pipfile           README.md         csharp            requirements.txt
+LICENSE           Pipfile.lock      blockchain.py     js                tests
+[node2] (local) root@192.168.0.7 ~/blockchain
+$ vi requirements.txt
+[node2] (local) root@192.168.0.7 ~/blockchain
+$ docker image build -t blockchain .
+Sending build context to Docker daemon  344.1kB
+Step 1/7 : FROM python:3.6-alpine
+3.6-alpine: Pulling from library/python
+aad63a933944: Pull complete
+f229563217f5: Pull complete
+bce07ec39263: Pull complete
+7fd926f0f7cc: Pull complete
+075e2aee5115: Pull complete
+Digest: sha256:406e2295248a078fee8ef872640ffd3b534c06fa192cd4e7d37e253665e127ea
+Status: Downloaded newer image for python:3.6-alpine
+ ---> 5e7f84829665
+Step 2/7 : WORKDIR /app
+ ---> Running in b677ab1d63c4
+Removing intermediate container b677ab1d63c4
+ ---> 5d44ffc99302
+Step 3/7 : ADD requirements.txt /app
+ ---> 948a3951f65a
+Step 4/7 : RUN cd /app &&     pip install -r requirements.txt
+ ---> Running in 0ec5be296a24
+Collecting flask==1.1.1
+  Downloading Flask-1.1.1-py2.py3-none-any.whl (94 kB)
+Collecting requests==2.23.0
+  Downloading requests-2.23.0-py2.py3-none-any.whl (58 kB)
+Collecting Jinja2>=2.10.1
+  Downloading Jinja2-2.11.1-py2.py3-none-any.whl (126 kB)
+Collecting click>=5.1
+  Downloading click-7.1.1-py2.py3-none-any.whl (82 kB)
+Collecting Werkzeug>=0.15
+  Downloading Werkzeug-1.0.1-py2.py3-none-any.whl (298 kB)
+Collecting itsdangerous>=0.24
+  Downloading itsdangerous-1.1.0-py2.py3-none-any.whl (16 kB)
+Collecting certifi>=2017.4.17
+  Downloading certifi-2019.11.28-py2.py3-none-any.whl (156 kB)
+Collecting idna<3,>=2.5
+  Downloading idna-2.9-py2.py3-none-any.whl (58 kB)
+Collecting urllib3!=1.25.0,!=1.25.1,<1.26,>=1.21.1
+  Downloading urllib3-1.25.8-py2.py3-none-any.whl (125 kB)
+Collecting chardet<4,>=3.0.2
+  Downloading chardet-3.0.4-py2.py3-none-any.whl (133 kB)
+Collecting MarkupSafe>=0.23
+  Downloading MarkupSafe-1.1.1.tar.gz (19 kB)
+Building wheels for collected packages: MarkupSafe
+  Building wheel for MarkupSafe (setup.py): started
+  Building wheel for MarkupSafe (setup.py): finished with status 'done'
+  Created wheel for MarkupSafe: filename=MarkupSafe-1.1.1-py3-none-any.whl size=12629 sha256=812ef00500069b392617c6efb3f9bbf62e6412fb0086efa7173749e3b3154265
+  Stored in directory: /root/.cache/pip/wheels/ca/85/2f/4c3a8ca6fb5eec7b43ec1e5666c7274dcdb86d6c32231aaa9d
+Successfully built MarkupSafe
+Installing collected packages: MarkupSafe, Jinja2, click, Werkzeug, itsdangerous, flask, certifi, idna, urllib3, chardet, requests
+Successfully installed Jinja2-2.11.1 MarkupSafe-1.1.1 Werkzeug-1.0.1 certifi-2019.11.28 chardet-3.0.4 click-7.1.1 flask-1.1.1 idna-2.9 itsdangerous-1.1.0 requests-2.23.0 urllib3-1.25.8
+Removing intermediate container 0ec5be296a24
+ ---> a68b573b745c
+Step 5/7 : ADD blockchain.py /app
+ ---> 3c6d22178a29
+Step 6/7 : EXPOSE 5000
+ ---> Running in 1a5c6341554c
+Removing intermediate container 1a5c6341554c
+ ---> 062a14f129bd
+Step 7/7 : CMD ["python", "blockchain.py", "--port", "5000"]
+ ---> Running in 590b7be5792e
+Removing intermediate container 590b7be5792e
+ ---> 1e25f7ee3c3b
+Successfully built 1e25f7ee3c3b
+Successfully tagged blockchain:latest
+[node2] (local) root@192.168.0.7 ~/blockchain
+$
